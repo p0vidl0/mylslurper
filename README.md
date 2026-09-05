@@ -27,6 +27,23 @@ in the working directory if present; see `cmd/mylslurper/config.json` for a
 sample). Every field can also be set via environment variables such as
 `HTTP_PORT` / `SMTP_PORT` / `DB_FILE` / `AUTH_SCHEME`.
 
+Development
+-----------
+
+To run frontend tests, Biome lint/format checks, and the same checks as CI
+locally:
+
+* Node.js **24** or higher (see `.nvmrc`; with nvm: `nvm use`)
+* npm
+
+```bash
+npm ci
+make lint      # golangci-lint, gofmt, biome
+make test      # Go tests (-race)
+make test-js   # Node unit tests
+make fmt       # gofmt + biome format
+```
+
 Quickstart With Docker
 ----------------------
 

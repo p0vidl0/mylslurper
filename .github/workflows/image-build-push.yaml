@@ -31,7 +31,7 @@ jobs:
       - name: Go lint
         uses: golangci/golangci-lint-action@v7
         with:
-          version: v2.1.6
+          version: v2.13.2
 
       - name: Go format check
         run: test -z "$(gofmt -l . | grep -v '^vendor/' || true)"
