@@ -73,7 +73,7 @@ func TestSMTPToAPI(t *testing.T) {
 	if err := store.Connect(ctx); err != nil {
 		t.Fatalf("Connect: %v", err)
 	}
-	t.Cleanup(func() { store.Close() })
+	t.Cleanup(func() { _ = store.Close() })
 
 	log := logrus.New()
 	log.SetLevel(logrus.PanicLevel)
@@ -115,7 +115,7 @@ func TestSMTPToAPI(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Dial: %v", err)
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 	client := bufio.NewReadWriter(bufio.NewReader(conn), bufio.NewWriter(conn))
 
 	readLine(t, client)
@@ -147,7 +147,7 @@ func TestSMTPToAPI(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GET /api/mail: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("GET /api/mail = %d", resp.StatusCode)

@@ -1,9 +1,18 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { stateToQueryString, queryStringToState } from "./query.js";
+import { queryStringToState, stateToQueryString } from "./query.js";
 
 test("stateToQueryString omits empty fields and default page", () => {
-	const qs = stateToQueryString({ q: "hello", from: "", to: "", start: "", end: "", sort: "subject", dir: "asc", page: 1 });
+	const qs = stateToQueryString({
+		q: "hello",
+		from: "",
+		to: "",
+		start: "",
+		end: "",
+		sort: "subject",
+		dir: "asc",
+		page: 1,
+	});
 	assert.equal(qs, "q=hello&sort=subject&dir=asc");
 });
 
@@ -20,7 +29,16 @@ test("queryStringToState fills defaults", () => {
 });
 
 test("queryStringToState round-trips a full query", () => {
-	const original = { q: "invoice", from: "a@b.com", to: "c@d.com", start: "2026-01-01", end: "2026-02-01", sort: "from", dir: "asc", page: 2 };
+	const original = {
+		q: "invoice",
+		from: "a@b.com",
+		to: "c@d.com",
+		start: "2026-01-01",
+		end: "2026-02-01",
+		sort: "from",
+		dir: "asc",
+		page: 2,
+	};
 	const roundTripped = queryStringToState(stateToQueryString(original));
 	assert.deepEqual(roundTripped, original);
 });

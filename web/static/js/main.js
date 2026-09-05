@@ -1,15 +1,20 @@
 import * as auth from "./auth.js";
-import * as store from "./store.js";
 import * as router from "./router.js";
+import * as store from "./store.js";
 
 function updateNavActive() {
 	const hash = location.hash || "#/inbox";
 	document.querySelectorAll("[data-nav]").forEach((a) => {
 		const key = a.getAttribute("data-nav");
 		const active =
-			(key === "inbox" && (hash.startsWith("#/inbox") || hash.startsWith("#/mail/") || hash === "#" || hash === "")) ||
+			(key === "inbox" &&
+				(hash.startsWith("#/inbox") ||
+					hash.startsWith("#/mail/") ||
+					hash === "#" ||
+					hash === "")) ||
 			(key === "saved-searches" && hash.startsWith("#/saved-searches")) ||
-			(key === "settings" && (hash.startsWith("#/settings") || hash.startsWith("#/admin")));
+			(key === "settings" &&
+				(hash.startsWith("#/settings") || hash.startsWith("#/admin")));
 		a.classList.toggle("is-active", active);
 	});
 }

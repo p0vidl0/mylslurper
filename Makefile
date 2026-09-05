@@ -10,11 +10,17 @@
 PYTHON ?= python3
 TO     ?=
 
-.PHONY: help test test-js coverage send-one send-suite send-mime send-all
+.PHONY: help test test-js lint lint-go lint-js fmt fmt-go fmt-js coverage send-one send-suite send-mime send-all
 
 help:
 	@echo "test        run Go tests (with race detector)"
 	@echo "test-js     run frontend unit tests"
+	@echo "lint        run Go and JavaScript linters (+ format checks)"
+	@echo "lint-go     golangci-lint + gofmt check"
+	@echo "lint-js     biome check (lint + format)"
+	@echo "fmt         format Go and JavaScript sources"
+	@echo "fmt-go      gofmt -w"
+	@echo "fmt-js      biome format --write"
 	@echo "coverage    Go test coverage summary"
 	@echo "send-one    one plain-text message  (TO=addr, optional)"
 	@echo "send-suite  attachments, XSS, Date headers, HTML"
@@ -26,6 +32,23 @@ test:
 
 test-js:
 	node --test $$(find web/static/js -name '*.test.js')
+
+lint: lint-go lint-js
+
+lint-go:
+	golangci-lint run ./...
+	@test -z "$$(gofmt -l . | grep -v '^vendor/' || true)" || (gofmt -l .; exit 1)
+
+lint-js:
+	npm run check:ci
+
+fmt: fmt-go fmt-js
+
+fmt-go:
+	gofmt -w $$(find . -name '*.go' -not -path './vendor/*')
+
+fmt-js:
+	npm run format
 
 coverage:
 	go test ./... -coverprofile=coverage.out -covermode=atomic

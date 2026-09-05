@@ -45,7 +45,11 @@ func main() {
 	if err := store.Connect(ctx); err != nil {
 		log.WithError(err).Fatal("failed to connect to storage")
 	}
-	defer store.Close()
+	defer func() {
+		if err := store.Close(); err != nil {
+			log.WithError(err).Error("error closing storage")
+		}
+	}()
 
 	jwtSvc := auth.NewJWTService(cfg.AuthSecret, time.Duration(cfg.AuthTimeoutInMinutes)*time.Minute)
 	sessionSvc := auth.NewSessionService(cfg.AuthSecret, time.Duration(cfg.AuthTimeoutInMinutes)*time.Minute)

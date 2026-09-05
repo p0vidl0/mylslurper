@@ -31,3 +31,5 @@ mail.db
 mailslurper.db
 mylslurper.db
 temp.db
+node_modules/
+coverage.out

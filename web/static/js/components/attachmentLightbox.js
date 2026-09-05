@@ -17,7 +17,11 @@ function ensureDialog() {
 export function openImage(url, fileName) {
 	const d = ensureDialog();
 	d.textContent = "";
-	const img = el("img", { src: url, alt: fileName, style: "max-width:100%;max-height:80vh;display:block;" });
+	const img = el("img", {
+		src: url,
+		alt: fileName,
+		style: "max-width:100%;max-height:80vh;display:block;",
+	});
 	d.appendChild(img);
 	openDialog(d);
 }

@@ -29,7 +29,7 @@ func newTestAPI(t *testing.T, cfg *config.Config) *API {
 	if err := store.Connect(context.Background()); err != nil {
 		t.Fatalf("Connect: %v", err)
 	}
-	t.Cleanup(func() { store.Close() })
+	t.Cleanup(func() { _ = store.Close() })
 
 	log := logrus.New()
 	log.SetLevel(logrus.PanicLevel)
@@ -279,8 +279,8 @@ func TestStaticHandlerServesIndexAndAssets(t *testing.T) {
 	cfg := config.Default()
 	a := newTestAPI(t, cfg)
 	a.Assets = fstest.MapFS{
-		"index.html":       {Data: []byte("<html>index</html>")},
-		"css/app.css":      {Data: []byte("body{}")},
+		"index.html":  {Data: []byte("<html>index</html>")},
+		"css/app.css": {Data: []byte("body{}")},
 	}
 	router := a.Router()
 

@@ -1,5 +1,5 @@
-import { openDialog, closeDialog, wireDismiss } from "./modal.js";
 import { renderList } from "../views/savedSearches.js";
+import { closeDialog, openDialog, wireDismiss } from "./modal.js";
 
 let dialog, listContainer;
 

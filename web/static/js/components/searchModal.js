@@ -1,6 +1,6 @@
-import { openDialog, closeDialog, wireDismiss } from "./modal.js";
-import { openPicker } from "./savedSearchPicker.js";
 import * as store from "../store.js";
+import { closeDialog, openDialog, wireDismiss } from "./modal.js";
+import { openPicker } from "./savedSearchPicker.js";
 import { toast } from "./toast.js";
 
 let dialog, form, fields;

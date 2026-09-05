@@ -1,4 +1,11 @@
-const IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/gif", "image/webp", "image/svg+xml", "image/bmp"]);
+const IMAGE_TYPES = new Set([
+	"image/png",
+	"image/jpeg",
+	"image/gif",
+	"image/webp",
+	"image/svg+xml",
+	"image/bmp",
+]);
 
 export function isImageAttachment(attachment) {
 	return IMAGE_TYPES.has((attachment.contentType || "").toLowerCase());

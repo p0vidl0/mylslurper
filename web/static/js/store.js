@@ -117,7 +117,9 @@ export const DEFAULT_INBOX_COLUMNS = { date: 96, from: 110, att: 24 };
 
 export function getInboxColumnWidths() {
 	try {
-		const raw = JSON.parse(localStorage.getItem(KEYS.inboxColumnWidths) || "null");
+		const raw = JSON.parse(
+			localStorage.getItem(KEYS.inboxColumnWidths) || "null",
+		);
 		if (!raw || typeof raw !== "object") return { ...DEFAULT_INBOX_COLUMNS };
 		const num = (v, fallback) => {
 			const n = Number(v);
@@ -138,11 +140,14 @@ export function setInboxColumnWidths(widths) {
 		localStorage.removeItem(KEYS.inboxColumnWidths);
 		return;
 	}
-	localStorage.setItem(KEYS.inboxColumnWidths, JSON.stringify({
-		date: Math.round(widths.date),
-		from: Math.round(widths.from),
-		att: Math.round(widths.att),
-	}));
+	localStorage.setItem(
+		KEYS.inboxColumnWidths,
+		JSON.stringify({
+			date: Math.round(widths.date),
+			from: Math.round(widths.from),
+			att: Math.round(widths.att),
+		}),
+	);
 }
 
 export function getToken() {

@@ -168,7 +168,7 @@ func TestListenerMaxConnections(t *testing.T) {
 	if err != nil {
 		t.Fatalf("second dial: %v", err)
 	}
-	defer second.Close()
+	defer func() { _ = second.Close() }()
 	secondRW := bufio.NewReadWriter(bufio.NewReader(second), bufio.NewWriter(second))
 
 	if _, err := secondRW.ReadString('\n'); err == nil {

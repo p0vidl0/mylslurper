@@ -120,7 +120,7 @@ func walkMultipart(item *Item, r io.Reader, boundary string) error {
 }
 
 func processPart(item *Item, part *multipart.Part) error {
-	defer part.Close()
+	defer func() { _ = part.Close() }()
 
 	header := textproto.MIMEHeader(part.Header)
 	contentType := header.Get("Content-Type")

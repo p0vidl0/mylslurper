@@ -5,8 +5,12 @@ function installBrowserMocks() {
 	const backing = new Map();
 	globalThis.localStorage = {
 		getItem: (key) => (backing.has(key) ? backing.get(key) : null),
-		setItem: (key, value) => { backing.set(key, String(value)); },
-		removeItem: (key) => { backing.delete(key); },
+		setItem: (key, value) => {
+			backing.set(key, String(value));
+		},
+		removeItem: (key) => {
+			backing.delete(key);
+		},
 	};
 	globalThis.window = {
 		matchMedia: () => ({ matches: false, addEventListener() {} }),

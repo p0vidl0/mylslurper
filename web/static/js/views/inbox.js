@@ -1,18 +1,19 @@
 import * as apiClient from "../api.js";
 import { UnauthorizedError } from "../api.js";
-import { cloneTemplate, fill, el, clear } from "../util/dom.js";
-import { formatDateTime, formatCountdown } from "../util/date.js";
-import { queryStringToState, stateToQueryString } from "../util/query.js";
+import { show as showLoading } from "../components/loadingOverlay.js";
 import * as pager from "../components/pager.js";
 import * as searchModal from "../components/searchModal.js";
-import * as store from "../store.js";
+import {
+	attachColumnSplitters,
+	attachVerticalSplitter,
+} from "../components/splitter.js";
 import { toast } from "../components/toast.js";
-import { show as showLoading } from "../components/loadingOverlay.js";
-import * as mailDetail from "./mailDetail.js";
 import * as liveEvents from "../events.js";
-import { attachVerticalSplitter, attachColumnSplitters } from "../components/splitter.js";
-
-const SORT_FIELDS = ["date", "subject", "from"];
+import * as store from "../store.js";
+import { formatCountdown, formatDateTime } from "../util/date.js";
+import { clear, cloneTemplate, el, fill } from "../util/dom.js";
+import { queryStringToState, stateToQueryString } from "../util/query.js";
+import * as mailDetail from "./mailDetail.js";
 
 let searchState = queryStringToState("");
 let selectedId = null;
@@ -57,7 +58,9 @@ function buildLayout() {
 	const listPane = el("div", { class: "inbox-list-pane" });
 	const toolbar = el("div", { class: "list-toolbar" });
 	els.searchBtn = el("button", { class: "btn btn-search", type: "button" });
-	els.searchBtn.appendChild(el("span", { class: "search-icon", "aria-hidden": "true" }));
+	els.searchBtn.appendChild(
+		el("span", { class: "search-icon", "aria-hidden": "true" }),
+	);
 	els.searchBtn.appendChild(document.createTextNode("Search"));
 	const meta = el("div", { class: "toolbar-meta" });
 	els.countdown = el("span", { class: "pill" }, "");
@@ -79,7 +82,11 @@ function buildLayout() {
 	for (const col of headCols) {
 		const cell = el("div", { class: "mail-col-head" });
 		if (col.field) {
-			const btn = el("button", { type: "button", "data-sort": col.field }, col.label);
+			const btn = el(
+				"button",
+				{ type: "button", "data-sort": col.field },
+				col.label,
+			);
 			btn.addEventListener("click", () => onSortClick(col.field));
 			cell.appendChild(btn);
 		} else {
@@ -174,21 +181,28 @@ function onSortClick(field) {
 }
 
 function updateSortIndicators() {
-	els.layout.querySelectorAll(".mail-list-head button[data-sort]").forEach((btn) => {
-		const field = btn.getAttribute("data-sort");
-		if (field === searchState.sort) {
-			btn.setAttribute("aria-sort", searchState.dir === "asc" ? "ascending" : "descending");
-			btn.textContent = `${sortLabel(field)} ${searchState.dir === "asc" ? "▲" : "▼"}`;
-		} else {
-			btn.removeAttribute("aria-sort");
-			btn.textContent = sortLabel(field);
-		}
-	});
+	els.layout
+		.querySelectorAll(".mail-list-head button[data-sort]")
+		.forEach((btn) => {
+			const field = btn.getAttribute("data-sort");
+			if (field === searchState.sort) {
+				btn.setAttribute(
+					"aria-sort",
+					searchState.dir === "asc" ? "ascending" : "descending",
+				);
+				btn.textContent = `${sortLabel(field)} ${searchState.dir === "asc" ? "▲" : "▼"}`;
+			} else {
+				btn.removeAttribute("aria-sort");
+				btn.textContent = sortLabel(field);
+			}
+		});
 }
 
 function syncURL() {
 	const qs = stateToQueryString(searchState);
-	const base = selectedId ? `#/mail/${encodeURIComponent(selectedId)}` : "#/inbox";
+	const base = selectedId
+		? `#/mail/${encodeURIComponent(selectedId)}`
+		: "#/inbox";
 	const newHash = qs ? `${base}?${qs}` : base;
 	if (location.hash !== newHash) {
 		history.replaceState(null, "", newHash);
@@ -196,7 +210,9 @@ function syncURL() {
 }
 
 async function load(quiet = false) {
-	const hideList = quiet ? null : showLoading(els.layout.querySelector(".inbox-list-scroll"));
+	const hideList = quiet
+		? null
+		: showLoading(els.layout.querySelector(".inbox-list-scroll"));
 	try {
 		const result = await apiClient.getMails(searchState);
 		renderRows(result.mailItems);
@@ -213,7 +229,9 @@ async function load(quiet = false) {
 		els.layout.classList.toggle("showing-detail", Boolean(selectedId));
 
 		if (selectedId) {
-			const stillVisible = result.mailItems.some((item) => item.id === selectedId);
+			const stillVisible = result.mailItems.some(
+				(item) => item.id === selectedId,
+			);
 			if (stillVisible) {
 				await loadDetail(selectedId);
 			} else {
@@ -256,7 +274,12 @@ function renderRows(items) {
 			fromAddress: item.fromAddress,
 		});
 		if (item.attachmentCount > 0) {
-			row.querySelector(".mail-row-att").appendChild(el("span", { class: "att-dot", title: `${item.attachmentCount} attachment${item.attachmentCount === 1 ? "" : "s"}` }));
+			row.querySelector(".mail-row-att").appendChild(
+				el("span", {
+					class: "att-dot",
+					title: `${item.attachmentCount} attachment${item.attachmentCount === 1 ? "" : "s"}`,
+				}),
+			);
 		}
 		row.dataset.id = item.id;
 		if (item.id === selectedId) row.classList.add("selected");
@@ -272,7 +295,13 @@ function renderRows(items) {
 }
 
 function searchStateHasFilters() {
-	return Boolean(searchState.q || searchState.from || searchState.to || searchState.start || searchState.end);
+	return Boolean(
+		searchState.q ||
+			searchState.from ||
+			searchState.to ||
+			searchState.start ||
+			searchState.end,
+	);
 }
 
 function buildEmptyState(filtered) {
@@ -281,12 +310,22 @@ function buildEmptyState(filtered) {
 	const icon = el("div", { class: "empty-inbox-icon" });
 	icon.appendChild(el("span"));
 	box.appendChild(icon);
-	box.appendChild(el("div", { class: "empty-inbox-title" }, filtered ? "No messages found" : "No messages yet"));
-	box.appendChild(el("div", { class: "empty-inbox-copy" },
-		filtered
-			? "Try a different search or clear the filters."
-			: "Mail sent to your test SMTP endpoint will show up here.",
-	));
+	box.appendChild(
+		el(
+			"div",
+			{ class: "empty-inbox-title" },
+			filtered ? "No messages found" : "No messages yet",
+		),
+	);
+	box.appendChild(
+		el(
+			"div",
+			{ class: "empty-inbox-copy" },
+			filtered
+				? "Try a different search or clear the filters."
+				: "Mail sent to your test SMTP endpoint will show up here.",
+		),
+	);
 	wrap.appendChild(box);
 	return wrap;
 }

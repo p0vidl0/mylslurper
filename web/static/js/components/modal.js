@@ -6,7 +6,9 @@ export function openDialog(dialogEl) {
 	const invoker = document.activeElement;
 	dialogEl.showModal();
 
-	const firstField = dialogEl.querySelector("input, select, textarea, button:not([data-dismiss])");
+	const firstField = dialogEl.querySelector(
+		"input, select, textarea, button:not([data-dismiss])",
+	);
 	if (firstField) firstField.focus();
 
 	const onClose = () => {

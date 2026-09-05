@@ -27,7 +27,7 @@ export { UnauthorizedError };
 
 export async function getMails(searchState) {
 	const qs = stateToQueryString(searchState);
-	const res = await request(`/api/mail${qs ? "?" + qs : ""}`);
+	const res = await request(`/api/mail${qs ? `?${qs}` : ""}`);
 	return res.json();
 }
 

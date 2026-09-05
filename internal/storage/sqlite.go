@@ -45,7 +45,7 @@ func (s *SQLiteStorage) Connect(ctx context.Context) error {
 	}
 
 	if err := ensureSchema(ctx, db); err != nil {
-		db.Close()
+		_ = db.Close()
 		return err
 	}
 
@@ -62,7 +62,7 @@ func (s *SQLiteStorage) StoreMail(ctx context.Context, item *mail.Item) (string,
 	if err != nil {
 		return "", err
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	_, err = tx.ExecContext(ctx, `
 		INSERT INTO mail_item (id, date_sent, from_address, to_addresses, subject, xmailer, content_type, boundary, text_body, html_body, raw_message)
@@ -137,7 +137,7 @@ func (s *SQLiteStorage) GetMailCollection(ctx context.Context, offset, limit int
 	if err != nil {
 		return nil, fmt.Errorf("querying mail collection: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var items []*mail.Item
 	var ids []string
@@ -181,7 +181,7 @@ func (s *SQLiteStorage) GetMailCollectionWithBodies(ctx context.Context, offset,
 	if err != nil {
 		return nil, fmt.Errorf("querying mail collection: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var items []*mail.Item
 	for rows.Next() {
@@ -237,7 +237,7 @@ func (s *SQLiteStorage) deleteWhere(ctx context.Context, condition string, args 
 	if err != nil {
 		return 0, err
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	if _, err := tx.ExecContext(ctx, fmt.Sprintf(
 		`DELETE FROM attachment WHERE mail_item_id IN (SELECT id FROM mail_item WHERE %s)`, condition,
@@ -276,7 +276,7 @@ func (s *SQLiteStorage) attachmentsFor(ctx context.Context, ids []string) (map[s
 	if err != nil {
 		return nil, fmt.Errorf("querying attachments: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var att mail.Attachment

@@ -1,9 +1,9 @@
 import * as auth from "./auth.js";
 import { clear } from "./util/dom.js";
 import * as inbox from "./views/inbox.js";
-import * as settings from "./views/settings.js";
 import * as login from "./views/login.js";
 import * as savedSearches from "./views/savedSearches.js";
+import * as settings from "./views/settings.js";
 
 const routes = [
 	{
@@ -11,16 +11,29 @@ const routes = [
 		view: inbox,
 		parse: (h) => {
 			const [idPart, queryString] = h.slice("#/mail/".length).split("?");
-			return { selectedId: decodeURIComponent(idPart), queryString: queryString || "" };
+			return {
+				selectedId: decodeURIComponent(idPart),
+				queryString: queryString || "",
+			};
 		},
 	},
-	{ match: (h) => h.startsWith("#/settings"), view: settings, parse: () => ({}) },
+	{
+		match: (h) => h.startsWith("#/settings"),
+		view: settings,
+		parse: () => ({}),
+	},
 	{
 		match: (h) => h.startsWith("#/login"),
 		view: login,
-		parse: (h) => ({ next: new URLSearchParams(h.split("?")[1] || "").get("next") || "#/inbox" }),
+		parse: (h) => ({
+			next: new URLSearchParams(h.split("?")[1] || "").get("next") || "#/inbox",
+		}),
 	},
-	{ match: (h) => h.startsWith("#/saved-searches"), view: savedSearches, parse: () => ({}) },
+	{
+		match: (h) => h.startsWith("#/saved-searches"),
+		view: savedSearches,
+		parse: () => ({}),
+	},
 	{
 		match: (h) => h.startsWith("#/inbox"),
 		view: inbox,
@@ -43,7 +56,8 @@ export function navigate(hash) {
 
 function resolveRoute(hash) {
 	for (const route of routes) {
-		if (route.match(hash)) return { view: route.view, params: route.parse(hash) };
+		if (route.match(hash))
+			return { view: route.view, params: route.parse(hash) };
 	}
 	return { view: inbox, params: {} };
 }

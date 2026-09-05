@@ -1,6 +1,6 @@
-import * as store from "../store.js";
-import { el, clear } from "../util/dom.js";
 import { toast } from "../components/toast.js";
+import * as store from "../store.js";
+import { clear, el } from "../util/dom.js";
 
 // renderList draws saved searches as a list of buttons; onSelect(search) is
 // called when one is chosen. Shared by the full management page and the
@@ -10,7 +10,9 @@ export function renderList(container, onSelect, { showDelete = false } = {}) {
 	const searches = store.getSavedSearches();
 
 	if (searches.length === 0) {
-		container.appendChild(el("p", { class: "empty-state" }, "No saved searches yet."));
+		container.appendChild(
+			el("p", { class: "empty-state" }, "No saved searches yet."),
+		);
 		return;
 	}
 
@@ -22,7 +24,15 @@ export function renderList(container, onSelect, { showDelete = false } = {}) {
 		item.appendChild(btn);
 
 		if (showDelete) {
-			const del = el("button", { class: "btn btn-danger", type: "button", "aria-label": `Delete ${search.name}` }, "Delete");
+			const del = el(
+				"button",
+				{
+					class: "btn btn-danger",
+					type: "button",
+					"aria-label": `Delete ${search.name}`,
+				},
+				"Delete",
+			);
 			del.addEventListener("click", () => {
 				store.deleteSavedSearch(search.name);
 				renderList(container, onSelect, { showDelete });
@@ -45,13 +55,23 @@ export function mount(container) {
 	page.appendChild(list);
 	container.appendChild(page);
 
-	renderList(list, (search) => {
-		location.hash = `#/inbox?${new URLSearchParams(search).toString()}`;
-	}, { showDelete: true });
+	renderList(
+		list,
+		(search) => {
+			location.hash = `#/inbox?${new URLSearchParams(search).toString()}`;
+		},
+		{ showDelete: true },
+	);
 
-	unsubscribe = store.on("savedSearches", () => renderList(list, (search) => {
-		location.hash = `#/inbox?${new URLSearchParams(search).toString()}`;
-	}, { showDelete: true }));
+	unsubscribe = store.on("savedSearches", () =>
+		renderList(
+			list,
+			(search) => {
+				location.hash = `#/inbox?${new URLSearchParams(search).toString()}`;
+			},
+			{ showDelete: true },
+		),
+	);
 }
 
 export function unmount() {

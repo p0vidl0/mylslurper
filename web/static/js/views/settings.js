@@ -1,7 +1,7 @@
 import * as apiClient from "../api.js";
-import { el } from "../util/dom.js";
-import * as store from "../store.js";
 import { toast } from "../components/toast.js";
+import * as store from "../store.js";
+import { el } from "../util/dom.js";
 
 const THEMES = [
 	["system", "System"],
@@ -64,11 +64,30 @@ function buildDateFormatField() {
 
 function buildAutoRefreshField() {
 	const field = el("div", { class: "field" });
-	field.appendChild(el("label", { for: "auto-refresh-input" }, "Fallback refresh interval (minutes, 0 to disable)"));
-	field.appendChild(el("p", { class: "field-help" }, "Used only when the live connection is interrupted."));
-	const input = el("input", { id: "auto-refresh-input", type: "number", min: "0", step: "1" });
+	field.appendChild(
+		el(
+			"label",
+			{ for: "auto-refresh-input" },
+			"Fallback refresh interval (minutes, 0 to disable)",
+		),
+	);
+	field.appendChild(
+		el(
+			"p",
+			{ class: "field-help" },
+			"Used only when the live connection is interrupted.",
+		),
+	);
+	const input = el("input", {
+		id: "auto-refresh-input",
+		type: "number",
+		min: "0",
+		step: "1",
+	});
 	input.value = String(store.getAutoRefreshMinutes());
-	input.addEventListener("change", () => store.setAutoRefreshMinutes(Number(input.value) || 0));
+	input.addEventListener("change", () =>
+		store.setAutoRefreshMinutes(Number(input.value) || 0),
+	);
 	field.appendChild(input);
 	return field;
 }
@@ -80,22 +99,34 @@ function buildPruneSection() {
 	const select = el("select", { id: "prune-select" });
 	row.appendChild(select);
 
-	apiClient.getPruneOptions().then((options) => {
-		for (const opt of options) {
-			select.appendChild(el("option", { value: opt.code }, opt.description));
-		}
-	}).catch((err) => toast.error(`Could not load prune options: ${err.message}`));
+	apiClient
+		.getPruneOptions()
+		.then((options) => {
+			for (const opt of options) {
+				select.appendChild(el("option", { value: opt.code }, opt.description));
+			}
+		})
+		.catch((err) =>
+			toast.error(`Could not load prune options: ${err.message}`),
+		);
 
-	const btn = el("button", { class: "btn btn-danger", type: "button" }, "Delete");
+	const btn = el(
+		"button",
+		{ class: "btn btn-danger", type: "button" },
+		"Delete",
+	);
 	btn.addEventListener("click", async () => {
 		const code = select.value;
 		if (!code) return;
 		const label = select.selectedOptions[0]?.textContent || code;
-		if (!confirm(`Delete mail matching "${label}"? This cannot be undone.`)) return;
+		if (!confirm(`Delete mail matching "${label}"? This cannot be undone.`))
+			return;
 
 		try {
 			const result = await apiClient.pruneMail(code);
-			toast.success(`Deleted ${result.deletedCount} message${result.deletedCount === 1 ? "" : "s"}`);
+			toast.success(
+				`Deleted ${result.deletedCount} message${result.deletedCount === 1 ? "" : "s"}`,
+			);
 		} catch (err) {
 			toast.error(`Could not delete mail: ${err.message}`);
 		}
@@ -111,16 +142,27 @@ function buildVersionSection() {
 	const current = el("p", { class: "settings-version" }, "Loading…");
 	section.appendChild(current);
 
-	apiClient.getVersion()
-		.then((v) => { current.textContent = `Running version ${v.version}`; })
-		.catch(() => { current.textContent = "Could not determine running version."; });
+	apiClient
+		.getVersion()
+		.then((v) => {
+			current.textContent = `Running version ${v.version}`;
+		})
+		.catch(() => {
+			current.textContent = "Could not determine running version.";
+		});
 
-	const checkBtn = el("button", { class: "btn", type: "button" }, "Check latest release on GitHub");
+	const checkBtn = el(
+		"button",
+		{ class: "btn", type: "button" },
+		"Check latest release on GitHub",
+	);
 	const result = el("p", { class: "field-help" });
 	checkBtn.addEventListener("click", async () => {
 		result.textContent = "Checking…";
 		try {
-			const res = await fetch("https://api.github.com/repos/p0vidl0/mylslurper/releases/latest");
+			const res = await fetch(
+				"https://api.github.com/repos/p0vidl0/mylslurper/releases/latest",
+			);
 			if (!res.ok) throw new Error(`GitHub responded with ${res.status}`);
 			const data = await res.json();
 			result.textContent = `Latest release: ${data.tag_name}`;

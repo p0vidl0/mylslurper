@@ -16,7 +16,7 @@ func newTestStorage(t *testing.T) (*SQLiteStorage, string) {
 	if err := s.Connect(context.Background()); err != nil {
 		t.Fatalf("Connect: %v", err)
 	}
-	t.Cleanup(func() { s.Close() })
+	t.Cleanup(func() { _ = s.Close() })
 	return s, path
 }
 
@@ -52,7 +52,7 @@ func TestConnectIsIdempotentAndPersists(t *testing.T) {
 	if err := s2.Connect(ctx); err != nil {
 		t.Fatalf("second Connect: %v", err)
 	}
-	defer s2.Close()
+	defer func() { _ = s2.Close() }()
 
 	count, err := s2.GetMailCount(ctx, nil)
 	if err != nil {

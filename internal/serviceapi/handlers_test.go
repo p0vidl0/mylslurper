@@ -21,7 +21,7 @@ func newTestServer(t *testing.T) *Server {
 	if err := store.Connect(context.Background()); err != nil {
 		t.Fatalf("Connect: %v", err)
 	}
-	t.Cleanup(func() { store.Close() })
+	t.Cleanup(func() { _ = store.Close() })
 
 	log := logrus.New()
 	log.SetLevel(logrus.PanicLevel)

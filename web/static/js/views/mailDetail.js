@@ -1,9 +1,13 @@
-import { el, clear } from "../util/dom.js";
-import { getMailMessageURL, getMailMessageRawURL } from "../api.js";
-import { attachmentURL, formatSize, isImageAttachment } from "../util/attachments.js";
-import { formatDateTime } from "../util/date.js";
+import { getMailMessageRawURL, getMailMessageURL } from "../api.js";
 import { openImage } from "../components/attachmentLightbox.js";
 import * as store from "../store.js";
+import {
+	attachmentURL,
+	formatSize,
+	isImageAttachment,
+} from "../util/attachments.js";
+import { formatDateTime } from "../util/date.js";
+import { clear, el } from "../util/dom.js";
 
 function openMailLinksInNewTab(iframe) {
 	iframe.addEventListener(
@@ -25,30 +29,56 @@ function openMailLinksInNewTab(iframe) {
 
 export function renderEmpty(container) {
 	clear(container);
-	container.appendChild(el("div", { class: "empty-state" }, "Select a message to view it here."));
+	container.appendChild(
+		el("div", { class: "empty-state" }, "Select a message to view it here."),
+	);
 }
 
 export function renderDetail(container, item) {
 	clear(container);
 
 	const detail = el("div", { class: "mail-detail" });
-	detail.appendChild(el("h1", { class: "mail-detail-subject" }, item.subject || "(no subject)"));
+	detail.appendChild(
+		el("h1", { class: "mail-detail-subject" }, item.subject || "(no subject)"),
+	);
 
 	const headers = el("dl", { class: "mail-headers" });
 	const addHeader = (label, value, extraClass) => {
 		headers.appendChild(el("dt", {}, label));
-		headers.appendChild(el("dd", extraClass ? { class: extraClass } : {}, value || "—"));
+		headers.appendChild(
+			el("dd", extraClass ? { class: extraClass } : {}, value || "—"),
+		);
 	};
 	addHeader("From", item.fromAddress);
 	addHeader("To", (item.toAddresses || []).join(", "));
-	addHeader("Date", formatDateTime(item.dateSent, store.getDateFormat()), "mail-date");
+	addHeader(
+		"Date",
+		formatDateTime(item.dateSent, store.getDateFormat()),
+		"mail-date",
+	);
 	if (item.xMailer) addHeader("X-Mailer", item.xMailer);
 	detail.appendChild(headers);
 
 	const links = el("p", { class: "mail-detail-links" });
-	links.appendChild(el("a", { href: getMailMessageURL(item.id), target: "_blank", rel: "noopener" }, "Open message"));
+	links.appendChild(
+		el(
+			"a",
+			{ href: getMailMessageURL(item.id), target: "_blank", rel: "noopener" },
+			"Open message",
+		),
+	);
 	links.appendChild(el("span", { class: "sep" }, "·"));
-	links.appendChild(el("a", { href: getMailMessageRawURL(item.id), target: "_blank", rel: "noopener" }, "View raw source"));
+	links.appendChild(
+		el(
+			"a",
+			{
+				href: getMailMessageRawURL(item.id),
+				target: "_blank",
+				rel: "noopener",
+			},
+			"View raw source",
+		),
+	);
 	detail.appendChild(links);
 
 	if (item.attachments && item.attachments.length > 0) {
@@ -57,11 +87,21 @@ export function renderDetail(container, item) {
 			const li = el("li");
 			const url = attachmentURL(item.id, att.id);
 			if (isImageAttachment(att)) {
-				const btn = el("button", { class: "btn", type: "button" }, `${att.fileName} (${formatSize(att.sizeBytes)})`);
+				const btn = el(
+					"button",
+					{ class: "btn", type: "button" },
+					`${att.fileName} (${formatSize(att.sizeBytes)})`,
+				);
 				btn.addEventListener("click", () => openImage(url, att.fileName));
 				li.appendChild(btn);
 			} else {
-				li.appendChild(el("a", { href: url }, `${att.fileName} (${formatSize(att.sizeBytes)})`));
+				li.appendChild(
+					el(
+						"a",
+						{ href: url },
+						`${att.fileName} (${formatSize(att.sizeBytes)})`,
+					),
+				);
 			}
 			list.appendChild(li);
 		}
@@ -80,7 +120,9 @@ export function renderDetail(container, item) {
 		openMailLinksInNewTab(iframe);
 		iframe.srcdoc = item.htmlBody;
 	} else {
-		detail.appendChild(el("pre", { class: "mail-body-text" }, item.textBody || ""));
+		detail.appendChild(
+			el("pre", { class: "mail-body-text" }, item.textBody || ""),
+		);
 	}
 
 	container.appendChild(detail);

@@ -5,8 +5,12 @@ function installBrowserMocks() {
 	const backing = new Map();
 	globalThis.localStorage = {
 		getItem: (key) => (backing.has(key) ? backing.get(key) : null),
-		setItem: (key, value) => { backing.set(key, String(value)); },
-		removeItem: (key) => { backing.delete(key); },
+		setItem: (key, value) => {
+			backing.set(key, String(value));
+		},
+		removeItem: (key) => {
+			backing.delete(key);
+		},
 	};
 	globalThis.window = {
 		matchMedia: () => ({ matches: false, addEventListener() {} }),
@@ -25,7 +29,9 @@ test.before(async () => {
 
 test("getMailCount sends Authorization header when token exists", async (t) => {
 	const originalFetch = globalThis.fetch;
-	t.after(() => { globalThis.fetch = originalFetch; });
+	t.after(() => {
+		globalThis.fetch = originalFetch;
+	});
 	globalThis.fetch = async (url, options) => {
 		assert.equal(url, "/api/mail/count");
 		assert.equal(options.headers.Authorization, "Bearer secret-token");
@@ -43,11 +49,14 @@ test("getMailCount sends Authorization header when token exists", async (t) => {
 
 test("getMailCount clears token and throws on 401", async (t) => {
 	const originalFetch = globalThis.fetch;
-	t.after(() => { globalThis.fetch = originalFetch; });
-	globalThis.fetch = async () => new Response(JSON.stringify({ error: "unauthorized" }), {
-		status: 401,
-		headers: { "Content-Type": "application/json" },
+	t.after(() => {
+		globalThis.fetch = originalFetch;
 	});
+	globalThis.fetch = async () =>
+		new Response(JSON.stringify({ error: "unauthorized" }), {
+			status: 401,
+			headers: { "Content-Type": "application/json" },
+		});
 
 	store.setToken("expired-token");
 	await assert.rejects(() => api.getMailCount(), api.UnauthorizedError);

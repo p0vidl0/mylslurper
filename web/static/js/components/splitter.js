@@ -7,7 +7,13 @@ const STEP_LARGE = 48;
 
 // attachVerticalSplitter wires a drag/keyboard handle that resizes `pane`
 // inside `layout`. Returns a detach() function for unmount.
-export function attachVerticalSplitter({ layout, pane, splitter, getWidth, setWidth }) {
+export function attachVerticalSplitter({
+	layout,
+	pane,
+	splitter,
+	getWidth,
+	setWidth,
+}) {
 	function bounds() {
 		const total = layout.clientWidth;
 		return { min: MIN_LIST, max: Math.max(MIN_LIST, total - MIN_DETAIL) };
@@ -34,7 +40,10 @@ export function attachVerticalSplitter({ layout, pane, splitter, getWidth, setWi
 		const { min, max } = bounds();
 		splitter.setAttribute("aria-valuemin", String(min));
 		splitter.setAttribute("aria-valuemax", String(max));
-		splitter.setAttribute("aria-valuenow", String(Math.round(pane.getBoundingClientRect().width)));
+		splitter.setAttribute(
+			"aria-valuenow",
+			String(Math.round(pane.getBoundingClientRect().width)),
+		);
 	}
 
 	function reset() {
@@ -119,7 +128,12 @@ function clamp(n, min, max) {
 // attachColumnSplitters lets the user drag the right edge of Date / Subject /
 // From to resize that border. Subject stays flexible; Date, From, and Att
 // are stored as pixel widths. Returns detach().
-export function attachColumnSplitters({ root, splitters, getWidths, setWidths }) {
+export function attachColumnSplitters({
+	root,
+	splitters,
+	getWidths,
+	setWidths,
+}) {
 	let widths = { ...DEFAULT_INBOX_COLUMNS, ...getWidths() };
 
 	function innerWidth() {
@@ -139,7 +153,10 @@ export function attachColumnSplitters({ root, splitters, getWidths, setWidths })
 			w.date = clamp(w.date, COL_MIN.date, Math.max(COL_MIN.date, maxDate));
 			const maxFrom = inner - w.date - COL_MIN.att - SUBJECT_MIN;
 			w.from = clamp(w.from, COL_MIN.from, Math.max(COL_MIN.from, maxFrom));
-			const maxAtt = Math.min(COL_MAX_ATT, inner - w.date - w.from - SUBJECT_MIN);
+			const maxAtt = Math.min(
+				COL_MAX_ATT,
+				inner - w.date - w.from - SUBJECT_MIN,
+			);
 			w.att = clamp(w.att, COL_MIN.att, Math.max(COL_MIN.att, maxAtt));
 		}
 		root.style.setProperty("--col-date", `${w.date}px`);

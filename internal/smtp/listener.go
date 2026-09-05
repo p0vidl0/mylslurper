@@ -28,7 +28,7 @@ type Listener struct {
 
 // Serve binds the listener and accepts connections until ctx is cancelled.
 func (l *Listener) Serve(ctx context.Context) error {
-	ln, err := net.Listen("tcp", l.Address)
+	ln, err := (&net.ListenConfig{}).Listen(ctx, "tcp", l.Address)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (l *Listener) Serve(ctx context.Context) error {
 }
 
 func (l *Listener) handle(conn net.Conn) {
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	log := l.Log.WithField("remote", conn.RemoteAddr().String())
 
