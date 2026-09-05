@@ -1,0 +1,17 @@
+{
+  "name": "mylslurper",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "lint": "biome lint web/static/js",
+    "format": "biome format --write web/static/js",
+    "check": "biome check web/static/js",
+    "check:ci": "biome ci web/static/js"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.8"
+  }
+}

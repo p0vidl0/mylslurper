@@ -1,0 +1,56 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
+	"files": {
+		"includes": ["web/static/js/**"]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double",
+			"semicolons": "always"
+		},
+		"globals": [
+			"window",
+			"document",
+			"localStorage",
+			"location",
+			"fetch",
+			"Response",
+			"HTMLElement",
+			"Event",
+			"FormData",
+			"URLSearchParams",
+			"Blob",
+			"FileReader",
+			"AbortController",
+			"setTimeout",
+			"clearTimeout",
+			"setInterval",
+			"clearInterval",
+			"requestAnimationFrame",
+			"cancelAnimationFrame",
+			"confirm",
+			"alert",
+			"navigator",
+			"history",
+			"CustomEvent"
+		]
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.test.js"],
+			"javascript": {
+				"globals": ["globalThis"]
+			}
+		}
+	]
+}
